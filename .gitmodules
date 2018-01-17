@@ -1,0 +1,6 @@
+[submodule "VulkanCore"]
+	path = VulkanCore
+	url = https://github.com/discosultan/VulkanCore.git
+[submodule "SDL2-CS"]
+	path = SDL2-CS
+	url = https://github.com/flibitijibibo/SDL2-CS.git

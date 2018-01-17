@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\VulkanFramework\MiniFramework.csproj" />
+    <ProjectReference Include="..\VulkanCore\Src\VulkanCore.csproj" />
+    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+</Project>
