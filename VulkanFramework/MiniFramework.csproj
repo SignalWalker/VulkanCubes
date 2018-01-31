@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>MiniFramework</AssemblyName>
     <RootNamespace>VulkanCore.Samples</RootNamespace>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
   </ItemGroup>
-
   <ItemGroup>
+    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
     <ProjectReference Include="..\VulkanCore\Src\VulkanCore.csproj" />
   </ItemGroup>
-
 </Project>

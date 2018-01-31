@@ -19,13 +19,19 @@
         }
 
         public void Init() {
+
+            Console.Out.WriteLine(Directory.GetCurrentDirectory());
+
             if (SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING) != 0) {
-                throw new Exception(SDL.SDL_GetError());
+                throw new SDLException();
             }
+
+            app.Initialize(this);
+            // you have to initialize vulkan before making a window
 
             window = SDL.SDL_CreateWindow(title, 10, 10, width, height, SDL.SDL_WindowFlags.SDL_WINDOW_VULKAN | SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
             if (window == IntPtr.Zero) {
-                throw new Exception(SDL.SDL_GetError());
+                throw new SDLException();
             }
         }
 

@@ -6,14 +6,17 @@ using System.Linq;
 using VulkanCore.Ext;
 using VulkanCore.Khr;
 
-namespace VulkanCore.Samples
-{
+namespace VulkanCore.Samples {
+    using System.Runtime.InteropServices;
+    using SDL2;
+
     public enum Platform {
-        Android, Win32, SDL2
+        Android,
+        Win32,
+        SDL2
     }
 
-    public interface IVulkanAppHost : IDisposable
-    {
+    public interface IVulkanAppHost : IDisposable {
         IntPtr WindowHandle { get; }
         IntPtr InstanceHandle { get; }
         int Width { get; }
@@ -23,8 +26,7 @@ namespace VulkanCore.Samples
         Stream Open(string path);
     }
 
-    public abstract class VulkanApp : IDisposable
-    {
+    public abstract class VulkanApp : IDisposable {
         private readonly Stack<IDisposable> _toDisposePermanent = new Stack<IDisposable>();
         private readonly Stack<IDisposable> _toDisposeFrame = new Stack<IDisposable>();
         private bool _initializingPermanent;
@@ -44,8 +46,7 @@ namespace VulkanCore.Samples
         protected Semaphore ImageAvailableSemaphore { get; private set; }
         protected Semaphore RenderingFinishedSemaphore { get; private set; }
 
-        public void Initialize(IVulkanAppHost host)
-        {
+        public void Initialize(IVulkanAppHost host) {
             Host = host;
 #if DEBUG
             const bool debug = true;
@@ -54,12 +55,12 @@ namespace VulkanCore.Samples
 #endif
             _initializingPermanent = true;
             // Calling ToDispose here registers the resource to be automatically disposed on exit.
-            Instance                   = ToDispose(CreateInstance(debug));
-            DebugReportCallback        = ToDispose(CreateDebugReportCallback(debug));
-            Surface                    = ToDispose(CreateSurface());
-            Context                    = ToDispose(new VulkanContext(Instance, Surface, Host.Platform));
-            Content                    = ToDispose(new ContentManager(Host, Context, "Content"));
-            ImageAvailableSemaphore    = ToDispose(Context.Device.CreateSemaphore());
+            Instance = ToDispose(CreateInstance(debug));
+            DebugReportCallback = ToDispose(CreateDebugReportCallback(debug));
+            Surface = ToDispose(CreateSurface());
+            Context = ToDispose(new VulkanContext(Instance, Surface, Host.Platform));
+            Content = ToDispose(new ContentManager(Host, Context, "Content"));
+            ImageAvailableSemaphore = ToDispose(Context.Device.CreateSemaphore());
             RenderingFinishedSemaphore = ToDispose(Context.Device.CreateSemaphore());
 
             _initializingPermanent = false;
@@ -94,8 +95,7 @@ namespace VulkanCore.Samples
         /// </summary>
         protected virtual void InitializeFrame() { }
 
-        public void Resize()
-        {
+        public void Resize() {
             Context.Device.WaitIdle();
 
             // Dispose all frame dependent resources.
@@ -115,16 +115,14 @@ namespace VulkanCore.Samples
             RecordCommandBuffers();
         }
 
-        public void Tick(Timer timer)
-        {
+        public void Tick(Timer timer) {
             Update(timer);
             Draw(timer);
         }
 
         protected virtual void Update(Timer timer) { }
 
-        protected virtual void Draw(Timer timer)
-        {
+        protected virtual void Draw(Timer timer) {
             // Acquire an index of drawing image for this frame.
             int imageIndex = Swapchain.AcquireNextImage(semaphore: ImageAvailableSemaphore);
 
@@ -140,8 +138,7 @@ namespace VulkanCore.Samples
             Context.PresentQueue.PresentKhr(RenderingFinishedSemaphore, Swapchain, imageIndex);
         }
 
-        public virtual void Dispose()
-        {
+        public virtual void Dispose() {
             Context.Device.WaitIdle();
             while (_toDisposeFrame.Count > 0)
                 _toDisposeFrame.Pop().Dispose();
@@ -149,12 +146,10 @@ namespace VulkanCore.Samples
                 _toDisposePermanent.Pop().Dispose();
         }
 
-        private Instance CreateInstance(bool debug)
-        {
+        private Instance CreateInstance(bool debug) {
             // Specify standard validation layers.
             string surfaceExtension;
-            switch (Host.Platform)
-            {
+            switch (Host.Platform) {
                 case Platform.Android:
                     surfaceExtension = Constant.InstanceExtension.KhrAndroidSurface;
                     break;
@@ -165,40 +160,55 @@ namespace VulkanCore.Samples
                     throw new NotImplementedException();
             }
 
+            IntPtr[] pNames = new IntPtr[0];
+
+            if (Host.Platform == Platform.SDL2) {
+                SDL.SDL_Vulkan_GetInstanceExtensions(Host.WindowHandle, out uint pCount, pNames);
+            }
+
             var createInfo = new InstanceCreateInfo();
-            if (debug)
-            {
+            if (debug) {
                 var availableLayers = Instance.EnumerateLayerProperties();
-                createInfo.EnabledLayerNames = new[] { Constant.InstanceLayer.LunarGStandardValidation }
-                    .Where(availableLayers.Contains)
-                    .ToArray();
-                createInfo.EnabledExtensionNames = new[]
-                {
-                    Constant.InstanceExtension.KhrSurface,
-                    surfaceExtension,
-                    Constant.InstanceExtension.ExtDebugReport
-                };
+                createInfo.EnabledLayerNames = new[] {Constant.InstanceLayer.LunarGStandardValidation}
+                                               .Where(availableLayers.Contains)
+                                               .ToArray();
+                createInfo.EnabledExtensionNames = Host.Platform == Platform.SDL2
+                                                       ? pNamesToStrings(pNames)
+                                                       : new[] {
+                                                                   Constant.InstanceExtension.KhrSurface,
+                                                                   surfaceExtension,
+                                                                   Constant.InstanceExtension.ExtDebugReport
+                                                               };
+            } else {
+                createInfo.EnabledExtensionNames = Host.Platform == Platform.SDL2
+                                                       ? pNamesToStrings(pNames)
+                                                       : new[] {
+                                                                   Constant.InstanceExtension.KhrSurface,
+                                                                   surfaceExtension
+                                                               };
             }
-            else
-            {
-                createInfo.EnabledExtensionNames = new[]
-                {
-                    Constant.InstanceExtension.KhrSurface,
-                    surfaceExtension,
-                };
-            }
+
             return new Instance(createInfo);
         }
 
-        private DebugReportCallbackExt CreateDebugReportCallback(bool debug)
-        {
+        string[] pNamesToStrings(IntPtr[] pNames) {
+            string[] res = new string[pNames.Length];
+            for (int i = 0; i < pNames.Length; i++) {
+                IntPtr ptr = pNames[i];
+                res[i] = Marshal.PtrToStringAuto(ptr);
+                Console.Out.WriteLine(res);
+            }
+
+            return res;
+        }
+
+        private DebugReportCallbackExt CreateDebugReportCallback(bool debug) {
             if (!debug) return null;
 
             // Attach debug callback.
             var debugReportCreateInfo = new DebugReportCallbackCreateInfoExt(
                 DebugReportFlagsExt.All,
-                args =>
-                {
+                args => {
                     Debug.WriteLine($"[{args.Flags}][{args.LayerPrefix}] {args.Message}");
                     return args.Flags.HasFlag(DebugReportFlagsExt.Error);
                 }
@@ -206,11 +216,9 @@ namespace VulkanCore.Samples
             return Instance.CreateDebugReportCallbackExt(debugReportCreateInfo);
         }
 
-        private SurfaceKhr CreateSurface()
-        {
+        private SurfaceKhr CreateSurface() {
             // Create surface.
-            switch (Host.Platform)
-            {
+            switch (Host.Platform) {
                 case Platform.Android:
                     return Instance.CreateAndroidSurfaceKhr(new AndroidSurfaceCreateInfoKhr(Host.WindowHandle));
                 case Platform.Win32:
@@ -220,14 +228,13 @@ namespace VulkanCore.Samples
             }
         }
 
-        private SwapchainKhr CreateSwapchain()
-        {
+        private SwapchainKhr CreateSwapchain() {
             SurfaceCapabilitiesKhr capabilities = Context.PhysicalDevice.GetSurfaceCapabilitiesKhr(Surface);
             SurfaceFormatKhr[] formats = Context.PhysicalDevice.GetSurfaceFormatsKhr(Surface);
             PresentModeKhr[] presentModes = Context.PhysicalDevice.GetSurfacePresentModesKhr(Surface);
             Format format = formats.Length == 1 && formats[0].Format == Format.Undefined
-                ? Format.B8G8R8A8UNorm
-                : formats[0].Format;
+                                ? Format.B8G8R8A8UNorm
+                                : formats[0].Format;
             PresentModeKhr presentMode =
                 presentModes.Contains(PresentModeKhr.Mailbox) ? PresentModeKhr.Mailbox :
                 presentModes.Contains(PresentModeKhr.FifoRelaxed) ? PresentModeKhr.FifoRelaxed :
@@ -242,16 +249,13 @@ namespace VulkanCore.Samples
                 presentMode));
         }
 
-        private void RecordCommandBuffers()
-        {
+        private void RecordCommandBuffers() {
             var subresourceRange = new ImageSubresourceRange(ImageAspects.Color, 0, 1, 0, 1);
-            for (int i = 0; i < CommandBuffers.Length; i++)
-            {
+            for (int i = 0; i < CommandBuffers.Length; i++) {
                 CommandBuffer cmdBuffer = CommandBuffers[i];
                 cmdBuffer.Begin(new CommandBufferBeginInfo(CommandBufferUsages.SimultaneousUse));
 
-                if (Context.PresentQueue != Context.GraphicsQueue)
-                {
+                if (Context.PresentQueue != Context.GraphicsQueue) {
                     var barrierFromPresentToDraw = new ImageMemoryBarrier(
                         SwapchainImages[i], subresourceRange,
                         Accesses.MemoryRead, Accesses.ColorAttachmentWrite,
@@ -261,13 +265,12 @@ namespace VulkanCore.Samples
                     cmdBuffer.CmdPipelineBarrier(
                         PipelineStages.ColorAttachmentOutput,
                         PipelineStages.ColorAttachmentOutput,
-                        imageMemoryBarriers: new[] { barrierFromPresentToDraw });
+                        imageMemoryBarriers: new[] {barrierFromPresentToDraw});
                 }
 
                 RecordCommandBuffer(cmdBuffer, i);
 
-                if (Context.PresentQueue != Context.GraphicsQueue)
-                {
+                if (Context.PresentQueue != Context.GraphicsQueue) {
                     var barrierFromDrawToPresent = new ImageMemoryBarrier(
                         SwapchainImages[i], subresourceRange,
                         Accesses.ColorAttachmentWrite, Accesses.MemoryRead,
@@ -277,7 +280,7 @@ namespace VulkanCore.Samples
                     cmdBuffer.CmdPipelineBarrier(
                         PipelineStages.ColorAttachmentOutput,
                         PipelineStages.BottomOfPipe,
-                        imageMemoryBarriers: new[] { barrierFromDrawToPresent });
+                        imageMemoryBarriers: new[] {barrierFromDrawToPresent});
                 }
 
                 cmdBuffer.End();
@@ -286,11 +289,9 @@ namespace VulkanCore.Samples
 
         protected abstract void RecordCommandBuffer(CommandBuffer cmdBuffer, int imageIndex);
 
-        protected T ToDispose<T>(T disposable)
-        {
+        protected T ToDispose<T>(T disposable) {
             var toDispose = _initializingPermanent ? _toDisposePermanent : _toDisposeFrame;
-            switch (disposable)
-            {
+            switch (disposable) {
                 case IEnumerable<IDisposable> sequence:
                     foreach (var element in sequence)
                         toDispose.Push(element);
@@ -299,6 +300,7 @@ namespace VulkanCore.Samples
                     toDispose.Push(element);
                     break;
             }
+
             return disposable;
         }
     }

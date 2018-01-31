@@ -9,7 +9,7 @@ namespace VulkanCubes {
     class Program : VulkanApp  {
 
         public static void Main(string[] args) {
-            AppHost host = new AppHost("VulkanCubes", new Program());
+            AppHost host = new AppHost("VulkanCubes", 1280, 720, new Program());
             host.Init();
             host.Run();
         }
