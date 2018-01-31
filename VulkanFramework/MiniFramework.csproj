@@ -4,9 +4,12 @@
     <AssemblyName>MiniFramework</AssemblyName>
     <RootNamespace>VulkanCore.Samples</RootNamespace>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Linux64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Linux64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win64'" />
   <ItemGroup>
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
   </ItemGroup>
