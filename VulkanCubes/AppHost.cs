@@ -26,13 +26,13 @@
                 throw new SDLException();
             }
 
-            app.Initialize(this);
-            // you have to initialize vulkan before making a window
-
-            window = SDL.SDL_CreateWindow(title, 10, 10, width, height, SDL.SDL_WindowFlags.SDL_WINDOW_VULKAN | SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+            window = SDL.SDL_CreateWindow(title, 10, 10, width, height, SDL.SDL_WindowFlags.SDL_WINDOW_VULKAN | SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
             if (window == IntPtr.Zero) {
                 throw new SDLException();
             }
+
+            app.Initialize(this);
+
         }
 
         public void Run() {

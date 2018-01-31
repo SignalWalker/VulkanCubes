@@ -156,14 +156,20 @@ namespace VulkanCore.Samples {
                 case Platform.Win32:
                     surfaceExtension = Constant.InstanceExtension.KhrWin32Surface;
                     break;
+                case Platform.SDL2:
+                    surfaceExtension = null;
+                    break; // have to do some other stuff
                 default:
                     throw new NotImplementedException();
             }
 
-            IntPtr[] pNames = new IntPtr[0];
+            IntPtr[] pNames = null;
 
             if (Host.Platform == Platform.SDL2) {
-                SDL.SDL_Vulkan_GetInstanceExtensions(Host.WindowHandle, out uint pCount, pNames);
+                // you have to call this twice because something, somewhere, is terrible
+                SDL.SDL_Vulkan_GetInstanceExtensions(Host.WindowHandle, out uint pCount, null);
+                pNames = new IntPtr[pCount];
+                SDL.SDL_Vulkan_GetInstanceExtensions(Host.WindowHandle, out pCount, pNames);
             }
 
             var createInfo = new InstanceCreateInfo();
@@ -184,7 +190,8 @@ namespace VulkanCore.Samples {
                                                        ? pNamesToStrings(pNames)
                                                        : new[] {
                                                                    Constant.InstanceExtension.KhrSurface,
-                                                                   surfaceExtension
+                                                                   surfaceExtension,
+                                                                   Constant.InstanceExtension.ExtDebugReport
                                                                };
             }
 
@@ -195,7 +202,7 @@ namespace VulkanCore.Samples {
             string[] res = new string[pNames.Length];
             for (int i = 0; i < pNames.Length; i++) {
                 IntPtr ptr = pNames[i];
-                res[i] = Marshal.PtrToStringAuto(ptr);
+                res[i] = Marshal.PtrToStringUni(ptr);
                 Console.Out.WriteLine(res);
             }
 
