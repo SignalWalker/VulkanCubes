@@ -8,7 +8,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Linux64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Linux64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win64'" />
