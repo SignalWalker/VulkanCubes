@@ -203,8 +203,9 @@ namespace VulkanCore.Samples {
             string[] res = new string[pNames.Length];
             for (int i = 0; i < pNames.Length; i++) {
                 IntPtr ptr = pNames[i];
-                res[i] = Marshal.PtrToStringUni(ptr);
-                Console.Out.WriteLine(res);
+                //res[i] = Marshal.PtrToStringUni(ptr);
+                res[i] = PtrToString(ptr);
+                Console.Out.WriteLine(res[i]);
             }
 
             return res;
@@ -213,13 +214,14 @@ namespace VulkanCore.Samples {
 	    string PtrToString(IntPtr ptr) {
 		    // the character array from the C-struct is of length 32
 		    // char types are 8-bit in C, but 16-bit in C#, so we use a byte (8-bit) here
-		    byte[] rawBytes = new byte[SDL.SDL_TEXTINPUTEVENT_TEXT_SIZE];
+		    byte[] rawBytes = new byte[32];
+	        //using 32 because everything is garbage
 
 		    // we have a pointer to an unmanaged character array from the SDL2 lib (event.text.text),
 		    // so we need to explicitly marshal into our byte array
-		    unsafe { Marshal.Copy((IntPtr) input.text, rawBytes, 0, SDL.SDL_TEXTINPUTEVENT_TEXT_SIZE); }
+	        Marshal.Copy(ptr, rawBytes, 0, 32);
 
-		    // the character array is null terminated, so we need to find that terminator
+	        // the character array is null terminated, so we need to find that terminator
 		    int nullIndex = Array.IndexOf(rawBytes, (byte)0);
 
 		    // finally, since the character array is UTF-8 encoded, get the UTF-8 string

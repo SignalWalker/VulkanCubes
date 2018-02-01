@@ -1,33 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<ItemGroup>
-		<ProjectReference Include="..\VulkanFramework\MiniFramework.csproj"/>
-		<ProjectReference Include="..\VulkanCore\Src\VulkanCore.csproj"/>
-		<ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj"/>
-	</ItemGroup>
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>netcoreapp2.0</TargetFramework>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Linux64'"/>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win64'"/>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Linux64'"/>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win64'"/>
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Platform)' == 'Linux64' Or '$(Platform)' == 'Win64'">
-		<PlatformTarget>x64</PlatformTarget>
-	</PropertyGroup>
-	<ItemGroup Condition="'$(Platform)' == 'Linux64'">
-		<Content Include="..\Libraries\x64\Linux\libSDL2-2.0.so.0.7.0">
-			<Link>SDL2.dll</Link>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	<ItemGroup Condition="'$(Platform)' == 'Win64'">
-		<Content Include="..\Libraries\x64\Windows\SDL2.dll">
-			<Link>SDL2.dll</Link>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Raft\Raft.csproj" />
+    <ProjectReference Include="..\VulkanCore\Src\VulkanCore.csproj" />
+    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Linux64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Linux64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win64'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'Linux64' Or '$(Platform)' == 'Win64'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Platform)' == 'Linux64'">
+    <Content Include="..\Libraries\x64\Linux\libSDL2-2.0.so.0.7.0">
+      <Link>SDL2.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)' == 'Win64'">
+    <Content Include="..\Libraries\x64\Windows\SDL2.dll">
+      <Link>SDL2.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

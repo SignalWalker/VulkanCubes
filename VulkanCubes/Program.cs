@@ -2,19 +2,19 @@
 
 namespace VulkanCubes {
     using System.Runtime.CompilerServices;
+    using Raft;
     using VulkanCore;
     using VulkanCore.Khr;
-    using VulkanCore.Samples;
 
-    class Program : VulkanApp  {
+    class Program  {
 
         public static void Main(string[] args) {
-            AppHost host = new AppHost("VulkanCubes", 1280, 720, new Program());
-            host.Init();
-            host.Run();
+            Window window = new Window("VulkanCubes", 1280, 720);
+            Forge forge = new Forge();
+            forge.Init(window);
         }
 
-        protected override void RecordCommandBuffer(CommandBuffer cmdBuffer, int imageIndex) {
+        /*protected override void RecordCommandBuffer(CommandBuffer cmdBuffer, int imageIndex) {
             var imageSubresourceRange = new ImageSubresourceRange(ImageAspects.Color, 0, 1, 0, 1);
 
             var barrierFromPresentToClear = new ImageMemoryBarrier(
@@ -53,6 +53,6 @@ namespace VulkanCubes {
 
             // Present the color output to screen.
             Context.PresentQueue.PresentKhr(RenderingFinishedSemaphore, Swapchain, imageIndex);
-        }
+        }*/
     }
 }
