@@ -8,13 +8,26 @@ namespace VulkanCubes {
 
     class Program  {
 
+        static Forge forge;
+        static bool run;
+
         public static void Main(string[] args) {
-            Window window = new Window("VulkanCubes", 1280, 720);
-            Forge forge = new Forge();
-            forge.Init(window);
+            forge = new Forge(1, "VulkanCubes", 100, 100, 1280, 720);
+            Run();
         }
 
-        /*protected override void RecordCommandBuffer(CommandBuffer cmdBuffer, int imageIndex) {
+        static void Run() {
+            while (run) { Draw(); }
+            Quit();
+        }
+
+        static void Draw() {
+
+        }
+
+        public static void Quit() { forge.Quit(); }
+
+        /*protected void RecordCommandBuffer(CommandBuffer cmdBuffer, int imageIndex) {
             var imageSubresourceRange = new ImageSubresourceRange(ImageAspects.Color, 0, 1, 0, 1);
 
             var barrierFromPresentToClear = new ImageMemoryBarrier(
