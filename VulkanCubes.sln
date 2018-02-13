@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDL2-CS.Core", "Raft\SDL2-C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniFramework", "VulkanFramework\MiniFramework.csproj", "{8E1122E9-3475-470D-A024-AF27765A7C42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raft", "Raft\Raft.csproj", "{4C5ECCB1-D48B-4187-9EEB-159DD1747AC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raft", "Raft\Raft\Raft.csproj", "{4C5ECCB1-D48B-4187-9EEB-159DD1747AC4}"
 EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
