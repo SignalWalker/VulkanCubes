@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\Raft\Raft.csproj" />
-    <ProjectReference Include="..\VulkanCore\Src\VulkanCore.csproj" />
-    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
+    <ProjectReference Include="..\Raft\VulkanCore\Src\VulkanCore.csproj" />
+    <ProjectReference Include="..\Raft\SDL2-CS\SDL2-CS.Core.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
