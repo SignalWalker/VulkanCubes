@@ -18,13 +18,13 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup Condition="'$(Platform)' == 'Linux64'">
-    <Content Include="..\Libraries\x64\Linux\libSDL2-2.0.so.0.7.0">
+    <Content Include="..\Raft\Libraries\x64\Linux\libSDL2-2.0.so.0.7.0">
       <Link>SDL2.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'Win64'">
-    <Content Include="..\Libraries\x64\Windows\SDL2.dll">
+    <Content Include="..\Raft\Libraries\x64\Windows\SDL2.dll">
       <Link>SDL2.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
