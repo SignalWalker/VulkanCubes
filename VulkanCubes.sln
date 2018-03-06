@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulkanCore", "Raft\VulkanCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDL2-CS.Core", "Raft\SDL2-CS\SDL2-CS.Core.csproj", "{E0667EF5-02CE-4BA2-A91C-7920D123CF2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniFramework", "VulkanFramework\MiniFramework.csproj", "{8E1122E9-3475-470D-A024-AF27765A7C42}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raft", "Raft\Raft\Raft.csproj", "{4C5ECCB1-D48B-4187-9EEB-159DD1747AC4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walker", "Raft\Walker\Walker\Walker.csproj", "{52BBA86B-0B9A-4BD3-90C3-F57FD647FED2}"

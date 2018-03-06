@@ -3,13 +3,15 @@
 namespace VulkanCubes {
     using System.Runtime.CompilerServices;
     using Raft;
+    using Raft.Input;
+    using SDL2;
     using VulkanCore;
     using VulkanCore.Khr;
 
     class Program  {
 
         static Forge forge;
-        static bool run;
+        static bool run = true;
 
         public static void Main(string[] args) {
             forge = new Forge(1, "VulkanCubes", 100, 100, 1280, 720);
@@ -17,12 +19,42 @@ namespace VulkanCubes {
         }
 
         static void Run() {
-            while (run) { Draw(); }
+            RecordCommandBuffer(forge.Context(0).graphicsBuffers[0], 0);
+            while (run) {
+                Draw();
+                foreach (SDL.SDL_Event ev in InputStream.ReadAll()) {
+                    if (ev.type == SDL.SDL_EventType.SDL_QUIT) { run = false; }
+                }
+            }
             Quit();
         }
 
         static void Draw() {
+            Context c = forge.Context(0);
+            Semaphore renderFinished = c.Device.CreateSemaphore();
+            c.GraphicsQueue.Submit(c.Device.CreateSemaphore(), PipelineStages.Transfer, c.graphicsBuffers[0], renderFinished);
+            c.PresentQueue.PresentKhr(renderFinished, c.swapchain, 0);
+        }
 
+        public static void RecordCommandBuffer(CommandBuffer cmdBuffer, int imgIndex) {
+            Context c = forge.Context(0);
+            RenderPassBeginInfo bInfo = new RenderPassBeginInfo(
+                c.framebuffers[imgIndex],
+                c.pass,
+                new Rect2D(0, 0, c.width, c.height),
+                new ClearColorValue(new ColorF4(.8f, .2f, .4f, 1)),
+                new ClearDepthStencilValue(1, 0));
+            cmdBuffer.Begin(new CommandBufferBeginInfo(CommandBufferUsages.SimultaneousUse));
+            cmdBuffer.CmdBeginRenderPass(bInfo);
+            cmdBuffer.CmdBindPipeline(PipelineBindPoint.Graphics, c.pipeline);
+            cmdBuffer.CmdBindDescriptorSets(PipelineBindPoint.Graphics, c.pipelineLayout, 0, c.descriptorSets);
+            //cmdBuffer.CmdBindVertexBuffer(c.vbo.buffer);
+            //cmdBuffer.CmdBindIndexBuffer(c.index.buffer);
+            cmdBuffer.CmdSetViewport(new Viewport(0, 0, c.width, c.height));
+            cmdBuffer.CmdClearColorImage(c.swapchainImages[imgIndex], ImageLayout.TransferDstOptimal, new ClearColorValue(new ColorF4(.8f, .58f, .93f, 1f)));
+            //cmdBuffer.CmdDrawIndexed(c.index.count);
+            cmdBuffer.CmdEndRenderPass();
+            cmdBuffer.End();
         }
 
         public static void Quit() { forge.Quit(); }
